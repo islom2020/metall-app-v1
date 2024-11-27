@@ -33,6 +33,7 @@ type Attributes = {
 };
 
 type Order = {
+  [x: string]: any;
   id: string;
   agent_name: string;
   agent_meta: Meta;
