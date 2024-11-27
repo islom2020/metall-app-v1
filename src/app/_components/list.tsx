@@ -40,17 +40,21 @@ const List = () => {
         });
       }
 
+      console.log("filt === ", filtData);
+
       if (query.warehouse !== "all") {
         if (warehousesData.length > 0 && filtData?.length > 0) {
+          console.log(filtData, warehousesData);
           const warehousesFilter = filtData?.filter(
-            (item) => item?.meta.href === warehousesData[0].store.meta.href
+            (item) => item?.store.meta.href === warehousesData[0]?.meta.href
           );
+          console.log("data ===", warehousesFilter);
           filtData = warehousesFilter;
         } else {
           const warehousesFilter = data?.filter(
-            (item) => item?.store.meta.href === warehousesData[0].meta.href
+            (item) => item?.store.meta.href === warehousesData[0]?.meta.href
           );
-          console.log("data===", warehousesFilter);
+
           filtData = warehousesFilter;
         }
       }
