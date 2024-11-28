@@ -6,7 +6,7 @@ import SearchBar from "../../_components/search-bar";
 export default async function Home({ params: { lng } }: LanguageParam) {
   return (
     <main>
-      <nav className='flex h-[60px] sticky z-50 top-0 border-b bg-primary items-center px-4 justify-between dark:bg-[#020817]'>
+      <nav className='flex h-[60px] sticky z-50 top-0 border-b gap-2 bg-primary items-center px-4 justify-between dark:bg-[#020817]'>
         <SearchBar />
         <div className='flex gap-2'>
           <ModeToggle />

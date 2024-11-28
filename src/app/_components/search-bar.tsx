@@ -29,14 +29,14 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
   });
 
   return (
-    <div className='w-full gap-4 flex flex-coll'>
+    <div className='w-full gap-2 md:gap-4 flex flex-coll'>
       <Select.Root
         value={query.name}
         onValueChange={(value) => setQuery({ name: value })}
         defaultValue='0'
       >
         <Select.Trigger
-          className='inline-flex h-[35px] items-center justify-between gap-[5px] rounded dark:bg-white/15 bg-white px-2 text-[13px] leading-none text-violet11 shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-violet9 w-[180px]'
+          className='inline-flex h-[35px] items-center justify-between gap-[5px] rounded dark:bg-white/15 bg-white px-2 text-[13px] leading-none text-violet11 shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-violet9 w-full md:w-[180px]'
           aria-label='Food'
         >
           <Select.Value placeholder='Select a name…' />
@@ -57,7 +57,9 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
                   className='flex items-center px-3 py-2 rounded cursor-pointer dark:hover:bg-white/30 hover:bg-gray-100 focus-visible:outline-none'
                 >
                   <Select.ItemText>
-                    <div className='text-sm'>All</div>
+                    <div className='text-sm w-full text-ellipsis text-nowrap overflow-hidden'>
+                      All
+                    </div>
                   </Select.ItemText>
                   <Select.ItemIndicator className='ml-auto'>
                     <CheckIcon width={16} height={16} />
@@ -70,7 +72,9 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
                     className='flex items-center px-3 py-2 rounded cursor-pointer dark:hover:bg-white/30 hover:bg-gray-100 focus-visible:outline-none'
                   >
                     <Select.ItemText>
-                      <div className='text-sm'>{option.name}</div>
+                      <div className='text-sm w-[100px] min-[400px]:w-[120px] min-[480px]:w-full md:w-full text-ellipsis text-nowrap overflow-hidden'>
+                        {option.name}
+                      </div>
                     </Select.ItemText>
                     <Select.ItemIndicator className='ml-auto'>
                       <CheckIcon width={16} height={16} />
@@ -91,7 +95,7 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
         defaultValue='0'
       >
         <Select.Trigger
-          className='inline-flex h-[35px] items-center justify-between gap-[5px] rounded dark:bg-white/15 bg-white px-[15px] text-[13px] leading-none text-violet11 shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-violet9 w-[180px]'
+          className='inline-flex h-[35px] items-center justify-between gap-[5px] rounded dark:bg-white/15 bg-white px-2 text-[13px] leading-none text-violet11 shadow-[0_2px_10px] shadow-black/10 outline-none hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-violet9 w-full md:w-[180px] '
           aria-label='Food'
         >
           <Select.Value placeholder='Select a sklad...' />
@@ -112,7 +116,9 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
                   className='flex items-center px-3 py-2 rounded cursor-pointer dark:hover:bg-white/30 hover:bg-gray-100 focus-visible:outline-none'
                 >
                   <Select.ItemText>
-                    <div className='text-sm'>All</div>
+                    <div className='text-sm w-full text-ellipsis text-nowrap overflow-hidden'>
+                      All
+                    </div>
                   </Select.ItemText>
                   <Select.ItemIndicator className='ml-auto'>
                     <CheckIcon width={16} height={16} />
@@ -125,7 +131,9 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
                     className='flex items-center px-3 py-2 rounded cursor-pointer dark:hover:bg-white/30 hover:bg-gray-100 focus-visible:outline-none'
                   >
                     <Select.ItemText>
-                      <div className='text-sm'>{option.name}</div>
+                      <div className='text-sm w-[100px] min-[400px]:w-[120px] min-[480px]:w-full md:w-full text-ellipsis text-nowrap overflow-hidden'>
+                        {option.name}
+                      </div>
                     </Select.ItemText>
                     <Select.ItemIndicator className='ml-auto'>
                       <CheckIcon width={16} height={16} />
