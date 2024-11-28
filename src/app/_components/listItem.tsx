@@ -37,6 +37,7 @@ import { useGetCustomEntity2 } from "@/hooks/use-get-custom-entity-2";
 import { CHECK_NUMBER_ID, COMMENT_PRO_ID } from "@/lib/env";
 import { useGetOrders } from "@/hooks/use-get-orders";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 interface ListItemProps {
   order: Order;
@@ -56,11 +57,11 @@ const ListItem = ({ order, data }: ListItemProps) => {
 
   const [open, setOpen] = useState(false);
   const [openToast, setOpenToast] = useState(false);
+  const [warehouse, setWarehouse] = useState("");
   const [currentOrderId, setCurrentOrderId] = useState("");
   const eventDateRef = React.useRef(new Date());
   const timerRef = React.useRef(0);
   const { refetch } = useGetOrders();
-
   React.useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
@@ -72,6 +73,13 @@ const ListItem = ({ order, data }: ListItemProps) => {
 
   const { data: customEntityData } = useGetCustomEntity();
   const { data: customEntityData2 } = useGetCustomEntity2();
+  const { data: warehousesData, isLoading: warehousesLoading } = useQuery({
+    queryKey: ["WAREHOUSES"],
+    queryFn: async () => {
+      const res = await axios.get("/api/warehouses");
+      return res.data;
+    },
+  });
   const [comments, setComments] = useState<Comments>({});
 
   const [entityId, setEntityId] = useState("");
@@ -99,6 +107,16 @@ const ListItem = ({ order, data }: ListItemProps) => {
       customEntityData2?.rows?.filter((item: any) => item.name === name2)[0]?.id
     );
   }, [customEntityData, order, customEntityData2]);
+
+  useEffect(() => {
+    if (warehousesData) {
+      const warehouses: any = warehousesData?.rows?.filter(
+        (item: any) => item?.meta.href === order.store.meta.href
+      );
+
+      setWarehouse(warehouses[0]?.name);
+    }
+  }, [warehousesLoading]);
 
   function oneWeekAway() {
     const now = new Date();
@@ -253,9 +271,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
   };
 
   const date = new Date(order.moment);
-
   const formattedDate = format(date, "dd.MM.yyyy");
-
   const toggleId = (id: string) => {
     setSelectedProducts((prev: string[]) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -275,7 +291,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
         <div className='p-5'>
           <div className='flex items-center justify-between mb-1'>
             <h4 className='text-xs capitalize'>{order.agent_name}</h4>
-            {/* <p className='text-xs ml-auto'>{order.phone}</p> */}
+            {warehouse && <p className='text-xs ml-auto'>{warehouse}</p>}
           </div>
           <div className='flex items-center justify-between'>
             <p className='text-xs'>{order.code}</p>
