@@ -75,15 +75,15 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     const demandId =
       isDemandExistData?.data?.demands?.[0]?.meta?.href?.split("/")[8];
 
-    console.log("demandID: ", demandId);
-    console.log("NEW REQ: ", rest);
+    console.log("demandID ===  ", demandId);
+    console.log("NEW REQ === ", rest);
 
     if (demandId) {
       const { data } = await http.put(`/remap/1.2/entity/demand/${demandId}`, {
         ...rest,
       });
 
-      console.log("demandData: ", data);
+      console.log("demandData === ", data);
 
       return NextResponse.json({
         data,
@@ -94,7 +94,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         const { data } = await http.post(`/remap/1.2/entity/demand`, {
           ...rest,
         });
-        console.log("DATA: ", data);
+        console.log("DATA === ", data);
 
         return NextResponse.json({
           data: data,
@@ -105,7 +105,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       }
     }
   } catch (err: any) {
-    console.log("error: ", err);
+    console.log("error === ", err);
 
     return NextResponse.json(
       {

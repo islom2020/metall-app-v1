@@ -1,28 +1,16 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import * as Toast from "@radix-ui/react-toast";
 import * as Select from "@radix-ui/react-select";
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  Cross1Icon,
-  QuestionMarkCircledIcon,
 } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
-/* eslint-disable @next/next/no-img-element */
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
+
 import {
   Table,
   TableBody,
@@ -38,6 +26,9 @@ import { CHECK_NUMBER_ID, COMMENT_PRO_ID } from "@/lib/env";
 import { useGetOrders } from "@/hooks/use-get-orders";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import InputPopup from "./popup/input-popup";
+import Dialog from "./popup/dialog";
+import ErrorPopup from "./popup/error-popup";
 
 interface ListItemProps {
   order: Order;
@@ -56,7 +47,8 @@ const ListItem = ({ order, data }: ListItemProps) => {
   );
 
   const [open, setOpen] = useState(false);
-  const [openToast, setOpenToast] = useState(false);
+  const [openToastInput, setOpenToastInput] = useState(false);
+  const [openToastError, setOpenToastError] = useState(false);
   const [warehouse, setWarehouse] = useState("");
   const [currentOrderId, setCurrentOrderId] = useState("");
   const eventDateRef = React.useRef(new Date());
@@ -131,11 +123,11 @@ const ListItem = ({ order, data }: ListItemProps) => {
     };
 
     if (!entityId || !entityId2 || entityId === "0" || entityId2 === "0") {
-      setOpenToast(false);
+      setOpenToastInput(false);
       window.clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => {
         eventDateRef.current = oneWeekAway();
-        setOpenToast(true);
+        setOpenToastInput(true);
       }, 100);
 
       setErrors(newErrors);
@@ -178,6 +170,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
     };
 
     const attributes = [];
+    const attributesDemand = [];
 
     // Add the first attribute if entityObj is not empty
     if (entityObj && Object.keys(entityObj).length > 0) {
@@ -188,6 +181,20 @@ const ListItem = ({ order, data }: ListItemProps) => {
           mediaType: "application/json",
         },
         id: "bf6c8db4-4807-11ef-0a80-037f00392b45",
+        name: "Кто отгрузил",
+        type: "customentity",
+        value: {
+          meta: entityObj.meta,
+          name: entityObj.name,
+        },
+      });
+      attributesDemand.push({
+        meta: {
+          href: "https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/attributes/fd17e1fe-ab2d-11ef-0a80-02cc003a75b0",
+          type: "attributemetadata",
+          mediaType: "application/json",
+        },
+        id: "fd17e1fe-ab2d-11ef-0a80-02cc003a75b0",
         name: "Кто отгрузил",
         type: "customentity",
         value: {
@@ -213,11 +220,20 @@ const ListItem = ({ order, data }: ListItemProps) => {
           name: entityObj2.name,
         },
       });
-    }
-
-    // Only add the attributes key if there are attributes to add
-    if (attributes.length > 0) {
-      putPayload.attributes = attributes;
+      attributesDemand.push({
+        meta: {
+          href: "https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/attributes/0a025ac2-ab2e-11ef-0a80-163f003cca55",
+          type: "attributemetadata",
+          mediaType: "application/json",
+        },
+        id: "0a025ac2-ab2e-11ef-0a80-163f003cca55",
+        name: "Бригада",
+        type: "customentity",
+        value: {
+          meta: entityObj2.meta,
+          name: entityObj2.name,
+        },
+      });
     }
 
     const positions = [
@@ -236,6 +252,11 @@ const ListItem = ({ order, data }: ListItemProps) => {
         }),
     ].filter((item) => item !== null);
 
+    // Only add the attributes key if there are attributes to add
+    if (attributes.length > 0) {
+      putPayload.attributes = attributes;
+    }
+
     const payload = {
       orderId: currentOrder.id,
       organization: { meta: currentOrder.organization_meta },
@@ -250,6 +271,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
           uuidHref: currentOrder.meta.uuidHref,
         },
       },
+      attributes: attributesDemand,
       positions,
     };
 
@@ -267,6 +289,9 @@ const ListItem = ({ order, data }: ListItemProps) => {
       console.log("data: ", data);
     } catch (err: any) {
       console.log("error: ", err);
+      setOpenToastError(!openToastError);
+    } finally {
+      setOpen(!open);
     }
   };
 
@@ -281,6 +306,14 @@ const ListItem = ({ order, data }: ListItemProps) => {
   return (
     <div className='my-5 rounded-md border border-primary p-y overflow-hidden'>
       <Dialog open={open} setOpen={setOpen} onConfirm={onConfirm} />
+      <InputPopup
+        open={openToastInput}
+        onOpen={() => setOpenToastInput(!openToastInput)}
+      />
+      <ErrorPopup
+        open={openToastError}
+        onOpen={() => setOpenToastError(!openToastError)}
+      />
 
       <div className='flex flex-col w-full mb-5'>
         {checkNumber && (
@@ -527,63 +560,8 @@ const ListItem = ({ order, data }: ListItemProps) => {
           </TableFooter>
         </Table>
       </div>
-
-      <Toast.Provider swipeDirection='up'>
-        <Toast.Root
-          className='bg-white border border-gray-300 rounded-md shadow-lg p-4 flex items-center space-x-4'
-          open={openToast}
-          onOpenChange={setOpenToast}
-        >
-          <Toast.Title className='text-3xl min-w-6'>
-            <QuestionMarkCircledIcon width={24} height={24} color='#FF4B68' />
-          </Toast.Title>
-          <Toast.Description className='text-sm text-gray-600'>
-            {
-              // eslint-disable-next-line react/no-unescaped-entities
-              `"Кто отгрузил" ва "Бригада" ни танлаш мажбурий`
-            }
-          </Toast.Description>
-          <Toast.Close
-            className='ml-auto text-gray-400 hover:text-gray-800'
-            aria-label='Close'
-          >
-            <Cross1Icon />
-          </Toast.Close>
-        </Toast.Root>
-        <Toast.Viewport className='fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col space-y-2 w-96 max-w-full z-50' />
-      </Toast.Provider>
     </div>
   );
 };
 
 export default ListItem;
-
-const Dialog = ({
-  open,
-  setOpen,
-  onConfirm,
-}: {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  onConfirm: () => void;
-}) => {
-  return (
-    <AlertDialog open={open}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            Ma&apos;lumotlar yuborishni tasdiqlaysizmi?
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setOpen(false)}>
-            Bekor qilish
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
-            Tasdiqlayman
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
