@@ -46,6 +46,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
       .map((item) => item.id)
   );
 
+  const [disabled, setDisabled] = useState(false);
   const [open, setOpen] = useState(false);
   const [openToastInput, setOpenToastInput] = useState(false);
   const [openToastError, setOpenToastError] = useState(false);
@@ -143,6 +144,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
   };
 
   const onConfirm = async () => {
+    setDisabled(true);
     const currentOrder = data.filter(
       (order) => order.id === currentOrderId
     )?.[0];
@@ -292,6 +294,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
       setOpenToastError(!openToastError);
     } finally {
       setOpen(!open);
+      setDisabled(false);
     }
   };
 
@@ -305,7 +308,12 @@ const ListItem = ({ order, data }: ListItemProps) => {
 
   return (
     <div className='my-5 rounded-md border border-primary p-y overflow-hidden'>
-      <Dialog open={open} setOpen={setOpen} onConfirm={onConfirm} />
+      <Dialog
+        disabled={disabled}
+        open={open}
+        setOpen={setOpen}
+        onConfirm={onConfirm}
+      />
       <InputPopup
         open={openToastInput}
         onOpen={() => setOpenToastInput(!openToastInput)}

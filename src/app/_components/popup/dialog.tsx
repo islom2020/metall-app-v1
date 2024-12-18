@@ -15,10 +15,12 @@ const Dialog = ({
   open,
   setOpen,
   onConfirm,
+  disabled,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   onConfirm: () => void;
+  disabled: boolean;
 }) => {
   return (
     <AlertDialog open={open}>
@@ -32,7 +34,7 @@ const Dialog = ({
           <AlertDialogCancel onClick={() => setOpen(false)}>
             Bekor qilish
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
+          <AlertDialogAction disabled={disabled} onClick={onConfirm}>
             Tasdiqlayman
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -41,4 +43,4 @@ const Dialog = ({
   );
 };
 
-export  default Dialog
+export default Dialog;
