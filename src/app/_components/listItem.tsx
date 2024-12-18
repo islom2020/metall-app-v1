@@ -29,6 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 import InputPopup from "./popup/input-popup";
 import Dialog from "./popup/dialog";
 import ErrorPopup from "./popup/error-popup";
+import SuccessPopup from "./popup/success-popup";
 
 interface ListItemProps {
   order: Order;
@@ -50,6 +51,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
   const [open, setOpen] = useState(false);
   const [openToastInput, setOpenToastInput] = useState(false);
   const [openToastError, setOpenToastError] = useState(false);
+  const [openToastSuccess, setOpenToastSuccess] = useState(false);
   const [warehouse, setWarehouse] = useState("");
   const [currentOrderId, setCurrentOrderId] = useState("");
   const eventDateRef = React.useRef(new Date());
@@ -287,7 +289,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
       ]);
 
       setOpen(false);
-
+      setOpenToastSuccess(!openToastSuccess);
       console.log("data: ", data);
     } catch (err: any) {
       console.log("error: ", err);
@@ -321,6 +323,10 @@ const ListItem = ({ order, data }: ListItemProps) => {
       <ErrorPopup
         open={openToastError}
         onOpen={() => setOpenToastError(!openToastError)}
+      />
+      <SuccessPopup
+        open={openToastSuccess}
+        onOpen={() => setOpenToastSuccess(!openToastSuccess)}
       />
 
       <div className='flex flex-col w-full mb-5'>
