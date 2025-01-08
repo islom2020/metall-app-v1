@@ -56,7 +56,7 @@ const ListItem = ({ order, data }: ListItemProps) => {
   });
   const [warehouse, setWarehouse] = useState("");
   const [currentOrderId, setCurrentOrderId] = useState("");
-  const [query, setQuery] = useQueryParam("id", NumberParam);
+  const [_, setQuery] = useQueryParam("id", NumberParam);
   const eventDateRef = React.useRef(new Date());
   const timerRef = React.useRef(0);
   const { refetch } = useGetOrders();
@@ -98,18 +98,19 @@ const ListItem = ({ order, data }: ListItemProps) => {
     const name = order.attributes.filter(
       (item: any) => item.id === "bf6c8db4-4807-11ef-0a80-037f00392b45"
     )[0]?.value?.name;
-    const name2 = order.attributes.filter(
+    const group = order.attributes.filter(
       (item: any) => item.id === "cc481563-4807-11ef-0a80-0bea00359633"
+    )[0]?.value?.name;
+    const cutter = order.attributes.filter(
+      (item: any) => item.id === "f25942d5-cc39-11ef-0a80-0c79004b7dbf"
     )[0]?.value?.name;
 
     setCollection({
       name: names?.rows?.filter((item: any) => item.name === name)[0]?.id,
-      group: groups?.rows?.filter((item: any) => item.name === name2)[0]?.id,
+      group: groups?.rows?.filter((item: any) => item.name === group)[0]?.id,
+      cutters: cutters?.rows?.filter((item: any) => item.name === cutter)[0]
+        ?.id,
     });
-    // setEntityId(names?.rows?.filter((item: any) => item.name === name)[0]?.id);
-    // setEntityId2(
-    //   groups?.rows?.filter((item: any) => item.name === name2)[0]?.id
-    // );
   }, [names, order, groups]);
 
   useEffect(() => {
@@ -131,37 +132,37 @@ const ListItem = ({ order, data }: ListItemProps) => {
   const handleOpenModal = (orderId: string) => {
     const { name, group, cutters } = collection;
     console.log("id ====", collection);
-    // const newErrors = {
-    //   name: !name || name === "0",
-    //   group: !group || group === "0",
-    //   cutters: !cutters || cutters === "0",
-    // };
-    // if (
-    //   !name ||
-    //   !group ||
-    //   name === "0" ||
-    //   group === "0" ||
-    //   !cutters ||
-    //   cutters === "0"
-    // ) {
-    //   setToastMessage({ ...toastMessage, input: false });
-    //   window.clearTimeout(timerRef.current);
-    //   timerRef.current = window.setTimeout(() => {
-    //     eventDateRef.current = oneWeekAway();
+    const newErrors = {
+      name: !name || name === "0",
+      group: !group || group === "0",
+      cutters: !cutters || cutters === "0",
+    };
+    if (
+      !name ||
+      !group ||
+      name === "0" ||
+      group === "0" ||
+      !cutters ||
+      cutters === "0"
+    ) {
+      setToastMessage({ ...toastMessage, input: false });
+      window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => {
+        eventDateRef.current = oneWeekAway();
 
-    //     setToastMessage({ ...toastMessage, input: true });
-    //   }, 100);
-    //   setErrors(newErrors);
-    // } else if (name && group && cutters) {
-    //   setCurrentOrderId(orderId);
-    //   setToastMessage({ ...toastMessage, open: true });
-    //   refetch();
-    //   setErrors({
-    //     name: false,
-    //     group: false,
-    //     cutters: false,
-    //   });
-    // }
+        setToastMessage({ ...toastMessage, input: true });
+      }, 100);
+      setErrors(newErrors);
+    } else if (name && group && cutters) {
+      setCurrentOrderId(orderId);
+      setToastMessage({ ...toastMessage, open: true });
+      refetch();
+      setErrors({
+        name: false,
+        group: false,
+        cutters: false,
+      });
+    }
   };
 
   const formattedDate = format(new Date(order.moment), "dd.MM.yyyy");

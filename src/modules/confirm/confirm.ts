@@ -10,12 +10,11 @@ interface ConfirmProps {
   collection: {
     name: string;
     group: string;
-    cutter: string;
+    cutters: string;
   };
   comments: any;
   order: any;
   selectedProducts: any;
-
   setToastMessage: (e: ToastMessage) => void;
   toastMessage: ToastMessage;
 }
@@ -30,7 +29,6 @@ export const onConfirm = async ({
   comments,
   order,
   selectedProducts,
-
   toastMessage,
   setToastMessage,
 }: ConfirmProps) => {
@@ -49,7 +47,7 @@ export const onConfirm = async ({
     (en: any) => en.id === collection.group
   )[0];
   const entityObj3 = cutters.rows.filter(
-    (en: any) => en.id === collection.cutter
+    (item: any) => item.id === collection.cutters
   )[0];
 
   const putPayload: any = {
@@ -101,7 +99,6 @@ export const onConfirm = async ({
       },
     });
   }
-
   // Add the second attribute if entityObj2 is not empty
   if (entityObj2 && Object.keys(entityObj2).length > 0) {
     attributes.push({
@@ -130,6 +127,37 @@ export const onConfirm = async ({
       value: {
         meta: entityObj2.meta,
         name: entityObj2.name,
+      },
+    });
+  }
+  // Add the third attribute if entityObj3 is not empty
+  if (entityObj3 && Object.keys(entityObj3).length > 0) {
+    attributes.push({
+      meta: {
+        href: "https://api.moysklad.ru/api/remap/1.2/entity/customerorder/metadata/attributes/f25942d5-cc39-11ef-0a80-0c79004b7dbf",
+        type: "attributemetadata",
+        mediaType: "application/json",
+      },
+      id: "f25942d5-cc39-11ef-0a80-0c79004b7dbf",
+      name: "Kim kesdi",
+      type: "customentity",
+      value: {
+        meta: entityObj3.meta,
+        name: entityObj3.name,
+      },
+    });
+    attributesDemand.push({
+      meta: {
+        href: "https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/attributes/f7ef7cf9-cdde-11ef-0a80-13c40064b11e",
+        type: "attributemetadata",
+        mediaType: "application/json",
+      },
+      id: "f7ef7cf9-cdde-11ef-0a80-13c40064b11e",
+      name: "Kim kesdi",
+      type: "customentity",
+      value: {
+        meta: entityObj3.meta,
+        name: entityObj3.name,
       },
     });
   }
