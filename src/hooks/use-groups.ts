@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export const useGetCustomEntity = () => {
+const useGroups = () => {
   return useQuery({
-    queryKey: ["custom-entity"],
+    queryKey: ["GROUPS"],
     queryFn: async () => {
-      const { data } = await axios.get("/api/custom-entity");
+      const { data } = await axios.get("/api/groups");
 
       return data as any;
     },
@@ -15,3 +15,5 @@ export const useGetCustomEntity = () => {
     refetchOnWindowFocus: false,
   });
 };
+
+export default useGroups;
